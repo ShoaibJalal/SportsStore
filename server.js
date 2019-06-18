@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const jsonServer = require("json-server");
 const chokidar = require("chokidar");
 const cors = require("cors");
@@ -34,7 +35,7 @@ const createServer = () => {
 };
 createServer();
 app.use(history());
-app.use("/", express.static("./build"));
+app.use(express.static(path.join(__dirname, "build")));
 app.use(cors());
 app.use(jsonServer.bodyParser);
 app.use(auth);
@@ -44,5 +45,8 @@ chokidar.watch(fileName).on("change", () => {
   console.log("Reloading web service data...");
   createServer();
   console.log("Reloading web service data complete.");
+});
+app.get("/*", function(req, res) {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 app.listen(port, () => console.log(`Web service running on port ${port}`));
